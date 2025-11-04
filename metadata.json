@@ -1,0 +1,5 @@
+{
+  "name": "Shen Bao Supernatural Article Filter",
+  "description": "An AI-powered tool to analyze newspaper headlines from the historical 'Shen Bao' (1872-1881) and filter for articles related to supernatural or strange events using the Gemini API.",
+  "requestFramePermissions": []
+}
