@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef } from 'react';
 import type { Article } from './types';
 import { filterSupernaturalArticles } from './services/geminiService';
@@ -37,43 +36,58 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [isAnalyzed, setIsAnalyzed] = useState<boolean>(false);
-  const [fileName, setFileName] = useState<string>('');
+  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [apiDelay, setApiDelay] = useState<number>(6);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
 
       setIsAnalyzed(false);
       setFilteredArticles([]);
       setError(null);
       setAllArticles([]);
-      setFileName('');
+      setFileNames([]);
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        if (!text) {
-            setError("File is empty or could not be read.");
-            return;
-        }
-        try {
-          const parsedArticles = parseCSV(text);
-          if (parsedArticles.length === 0) {
-            setError("Could not find any articles in the file. Please ensure the CSV format is 'Title,Author,日期' and the file is not empty.");
-          } else {
-            setAllArticles(parsedArticles);
-            setFileName(file.name);
-          }
-        } catch (err) {
-          setError("Error parsing CSV file. Please ensure it is a valid CSV file with UTF-8 encoding.");
-          console.error(err);
-        }
-      };
-      reader.onerror = () => {
-        setError("An error occurred while reading the file.");
-      };
-      reader.readAsText(file, 'UTF-8');
+      // FIX: Explicitly type `file` as `File` to resolve type inference errors where it was being treated as `unknown`.
+      const fileReadPromises = Array.from(files).map((file: File) => {
+          return new Promise<Article[]>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                  const text = e.target?.result as string;
+                  if (!text) {
+                      resolve([]);
+                      return;
+                  }
+                  try {
+                      const parsedArticles = parseCSV(text);
+                      resolve(parsedArticles);
+                  } catch (err) {
+                      reject(new Error(`Error parsing file ${file.name}. Please ensure it is a valid CSV.`));
+                  }
+              };
+              reader.onerror = () => {
+                  reject(new Error(`An error occurred while reading the file ${file.name}.`));
+              };
+              reader.readAsText(file, 'UTF-8');
+          });
+      });
+
+      Promise.all(fileReadPromises)
+          .then(results => {
+              const combinedArticles = results.flat();
+              if (combinedArticles.length === 0) {
+                  setError("Could not find any articles in the selected files. Please ensure the CSV format is 'Title,Author,日期' and the files are not empty.");
+              } else {
+                  setAllArticles(combinedArticles);
+                  // FIX: Explicitly type `f` as `File` to resolve a type inference error where it was being treated as `unknown`.
+                  setFileNames(Array.from(files).map((f: File) => f.name));
+              }
+          })
+          .catch((err: Error) => {
+              setError(err.message);
+          });
   };
 
   const handleAnalyze = useCallback(async () => {
@@ -101,7 +115,10 @@ const App: React.FC = () => {
         const filteredTitles = await filterSupernaturalArticles(batch);
         filteredTitles.forEach(title => allFilteredTitles.add(title));
         
-        await new Promise(resolve => setTimeout(resolve, 200));
+        // Add a delay to avoid hitting rate limits, but not after the last batch.
+        if (apiDelay > 0 && i < totalBatches - 1) {
+            await new Promise(resolve => setTimeout(resolve, apiDelay * 1000));
+        }
       }
 
       const results = allArticles.filter(article => allFilteredTitles.has(article.title));
@@ -115,14 +132,14 @@ const App: React.FC = () => {
       setIsLoading(false);
       setProgress({ current: 0, total: 0 });
     }
-  }, [allArticles]);
+  }, [allArticles, apiDelay]);
 
   const handleReset = () => {
     setIsAnalyzed(false);
     setFilteredArticles([]);
     setError(null);
     setAllArticles([]);
-    setFileName('');
+    setFileNames([]);
     if (fileInputRef.current) {
         fileInputRef.current.value = '';
     }
@@ -156,7 +173,7 @@ const App: React.FC = () => {
     <div className="text-center bg-gray-800/50 p-8 rounded-xl shadow-2xl backdrop-blur-md border border-gray-700 w-full max-w-xl">
       <h2 className="text-2xl font-semibold mb-2 text-white">上传要分析的文件</h2>
       <p className="text-gray-400 mb-6">
-        请选择一个CSV文件进行分析。文件格式应包含三列：<br />
+        请选择一个或多个CSV文件进行分析。文件格式应包含三列：<br />
         <code className="text-sm bg-gray-900 px-2 py-1 rounded">Title,Author,日期</code>
       </p>
       <label htmlFor="file-upload" className="w-full cursor-pointer group">
@@ -164,8 +181,8 @@ const App: React.FC = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-500 group-hover:text-purple-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
-            <p className="mt-4 text-lg font-semibold text-purple-400">点击此处选择文件</p>
-            <p className="text-sm text-gray-500 mt-1">或将文件拖放到这里</p>
+            <p className="mt-4 text-lg font-semibold text-purple-400">点击此处选择文件 (可多选)</p>
+            <p className="text-sm text-gray-500 mt-1">或将多个文件拖放到这里</p>
         </div>
       </label>
       <input
@@ -175,6 +192,7 @@ const App: React.FC = () => {
         onChange={handleFileChange}
         ref={fileInputRef}
         className="hidden"
+        multiple
       />
     </div>
   );
@@ -183,8 +201,27 @@ const App: React.FC = () => {
       <div className="text-center bg-gray-800/50 p-8 rounded-xl shadow-2xl backdrop-blur-md border border-gray-700">
         <h2 className="text-2xl font-semibold mb-2 text-white">准备开始分析</h2>
         <p className="text-gray-400 mb-6">
-          文件 <span className="font-semibold text-purple-300">{fileName}</span> 已加载，共找到 {allArticles.length} 篇文章。
+          已加载 {fileNames.length} 个文件 (<span className="font-semibold text-purple-300 truncate inline-block max-w-full">{fileNames.join(', ')}</span>)，<br/>共找到 {allArticles.length} 篇文章。
         </p>
+         <div className="mb-6 max-w-xs mx-auto">
+            <label htmlFor="api-delay" className="block text-sm font-medium text-gray-300 mb-2">
+                API 调用间隔 (秒)
+            </label>
+            <input
+                type="number"
+                id="api-delay"
+                name="api-delay"
+                value={apiDelay}
+                onChange={(e) => setApiDelay(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                min="0"
+                step="1"
+                className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5"
+                aria-describedby="delay-description"
+            />
+            <p id="delay-description" className="mt-2 text-xs text-gray-500">
+                为避免超过速率限制，在每批次调用之间增加延迟。
+            </p>
+        </div>
         <div className="flex flex-wrap justify-center gap-4">
             <button
                 onClick={handleAnalyze}
