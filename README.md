@@ -68,7 +68,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/1aXhstVvsqY9pO_tWMKuqsm
    - 这个函数会把固定的 systemInstruction 和当前这一批次的标题一起打包，发送给 Gemini API。
 所以，整个流程可以看作是：用一把固定的“尺子”（systemInstruction），去衡量您每次新提供的“布料”（上传的CSV数据）。
 ####  systemInstruction说明书举例
-```const systemInstruction = `You are an expert historical researcher specializing in the Chinese newspaper 'Shen Bao' (申报) from the late Qing dynasty. Your task is to identify article titles that belong to the '志怪' (records of anomalies, supernatural tales) or '异事' (strange, unusual events) genres. These genres often involve themes of karma (报应), ghosts (鬼), spirits (狐, 精), demons, divine retribution (天谴, 雷击), strange phenomena, and moral tales with a supernatural element.
+```
+ const systemInstruction = `You are an expert historical researcher specializing in the Chinese newspaper 'Shen Bao' (申报) from the late Qing dynasty. Your task is to identify article titles that belong to the '志怪' (records of anomalies, supernatural tales) or '异事' (strange, unusual events) genres. These genres often involve themes of karma (报应), ghosts (鬼), spirits (狐, 精), demons, divine retribution (天谴, 雷击), strange phenomena, and moral tales with a supernatural element.
 
 You will be provided with a list of titles to analyze. Base your judgment on the following extensive list of verified examples that FIT the '志怪' or '异事' categories:
 
@@ -127,7 +128,7 @@ You will be provided with a list of titles to analyze. Base your judgment on the
 - 阴官坐堂 (Underworld official holds court)
 
 Analyze the following list of titles. Return a JSON array containing ONLY the titles that you classify as '志怪' or '异事', following the patterns and themes in the examples above. Do not include any titles that are purely about crime, war, politics, social customs, or social commentary unless they have a clear supernatural or bizarre element.
-`; ```
+```
 
 **总结来说**：
 - 这个应用的“智能”并非来自于对您上传数据的学习或记忆。它的魔力在于 **“Prompt Engineering”（提示工程）** 的巧妙运用。我们通过一个精心设计的、包含角色、任务和范例的“系统指令”，对一个强大的通用AI模型进行了高效的即时引导，让它能够精准地完成这个非常专业和细分的分类任务。
