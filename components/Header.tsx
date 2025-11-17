@@ -8,7 +8,7 @@ const Header: React.FC = () => {
         申报 '志怪异事' AI 筛选器
       </h1>
       <p className="mt-2 text-md md:text-lg text-gray-400 max-w-3xl mx-auto">
-        使用 Gemini API 分析《申报》1872-1881年所有篇目，筛选出与“志怪”（超自然故事）和“异事”（奇特事件）相关的文章。
+        使用 Gemini API 分析《申报》所有篇目，筛选出与“志怪”（超自然故事）和“异事”（奇特事件）相关的文章。
       </p>
     </div>
   );
