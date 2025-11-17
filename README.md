@@ -95,3 +95,148 @@ Analyze the following list of titles. Return a JSON array containing ONLY the ti
 **总结来说**：
 - 这个应用的“智能”并非来自于对您上传数据的学习或记忆。它的魔力在于 **“Prompt Engineering”（提示工程）** 的巧妙运用。我们通过一个精心设计的、包含角色、任务和范例的“系统指令”，对一个强大的通用AI模型进行了高效的即时引导，让它能够精准地完成这个非常专业和细分的分类任务。
 - 这正是现代大语言模型应用的强大之处——我们不需要为每个任务都去训练一个新模型，而是可以通过高质量的“提示”（Prompt）来解锁和引导其已有的强大能力。
+
+## 不同systemInstruction分类示例得出的结果的不同：以1873年数据为例
+### 两个不同的分类示例：
+#### 分类示例A：
+```
+ const systemInstruction = `You are an expert historical researcher specializing in the Chinese newspaper 'Shen Bao' (申报) from the late Qing dynasty. Your task is to identify article titles that belong to the '志怪' (records of anomalies, supernatural tales) or '异事' (strange, unusual events) genres. These genres often involve themes of karma (报应), ghosts (鬼), spirits (狐, 精), demons, divine retribution (天谴, 雷击), strange phenomena, and moral tales with a supernatural element.
+
+You will be provided with a list of titles to analyze. Base your judgment on the following extensive list of verified examples that FIT the '志怪' or '异事' categories:
+
+- 窃物雷击 (Thief struck by lightning)
+- 雷击不孝 (Unfilial person struck by lightning)
+- 杀生孽报二事 (Two incidents of karmic retribution for killing)
+- 逼奸缢鬼 (Rapist is haunted to death by the victim's ghost)
+- 狐女报恩 (Fox spirit repays a kindness)
+- 猪仔鬼迷 (Piglet possessed by a ghost)
+- 负债变牛 (Turns into an ox for a debt)
+- 魂游地府 (Soul travels to the underworld)
+- 怨鬼索命 (Vengeful ghost seeks life)
+- 猴精 (Monkey spirit)
+- 梦游地狱记 (A record of dreaming and traveling to hell)
+- 天雨粟 (Sky rains millet)
+- 墙上冒血 (Blood seeps from the wall)
+- 谈狐 (Talking about foxes/fox spirits)
+- 厕中遇鬼 (Encountering a ghost in the toilet)
+- 山神娶妇 (Mountain god marries a woman)
+- 记遇仙赠丹事 (Record of encountering an immortal who gifted a pill)
+- 乩仙轶事 (Anecdotes of a planchette spirit)
+- 兔变猫 (Rabbit transforms into a cat)
+- 幼妇化为男 (Young wife transforms into a man)
+- 水鬼奇谈 (Strange tales of water ghosts)
+- 溺女恶报 (Evil retribution for drowning a daughter)
+- 木中字画 (Characters and paintings inside wood)
+- 僵尸 (Hopping vampire/zombie)
+- 还阳训子 (Returning from the dead to teach a son a lesson)
+- 记朱烈妇显灵事 (Record of the ghost of the chaste woman Zhu appearing)
+- 鬼讨房饭钱 (Ghost demands money for room and board)
+- 记卫某惑骷髅精事 (Record of Mr. Wei being bewitched by a skeleton spirit)
+- 罗刹国奇闻 (Strange tales from the Rakshasa country)
+- 捉鼠孽报 (Karmic retribution for catching mice)
+- 牛报仇 (Ox takes revenge)
+- 雷击负施忘恩显报 (Lightning strikes an ungrateful person as clear retribution)
+- 媚神获祸 (Disaster from charming a deity)
+- 逆子被谴 (Unfilial son is condemned)
+- 梦稽功过 (Dreaming of one's merits and demerits being audited)
+- 川沙异事 (Strange event in Chuansha)
+- 屍身风挟舟 (Corpse carried by wind alongside a boat)
+- 蛇祟 (Snake demon/curse)
+- 牧奴遇怪 (Shepherd boy encounters a monster)
+- 科声孽报 (Karmic retribution related to imperial examinations)
+- 货郎遇魅 (Peddler encounters a demon)
+- 舟中异梦记 (Record of a strange dream on a boat)
+- 鬼神戒讼 (Ghosts and gods warn against lawsuits)
+- 水鬼奇谈 (Strange tales of water ghosts)
+- 元宵为扶鸾戏 (Playing with a planchette on the Lantern Festival)
+- 归元寺僧圆寂志异 (Strange record of a monk's passing at Guiyuan Temple)
+- 溺死奇闻 (Strange news of drowning)
+- 痨虫异事 (Strange affair of the consumption bug)
+- 醉中获鬼 (Catching a ghost while drunk)
+- 放生解罪 (Releasing captive animals to absolve sins)
+- 乩仙题画 (Planchette spirit composes a painting inscription)
+- 赤柱怪兽 (The monster of Stanley)
+- 阴官坐堂 (Underworld official holds court)
+
+Analyze the following list of titles. Return a JSON array containing ONLY the titles that you classify as '志怪' or '异事', following the patterns and themes in the examples above. Do not include any titles that are purely about crime, war, politics, social customs, or social commentary unless they have a clear supernatural or bizarre element.
+```
+
+#### 分类示例B：
+```
+ const systemInstruction = You are an expert historical researcher specializing in the Chinese newspaper 'Shen Bao' (申报) from the late Qing dynasty. Your task is to identify article titles that belong to the '志怪' (records of anomalies, supernatural tales) or '异事' (strange, unusual events) genres. These genres often involve themes of karma (报应), ghosts (鬼), spirits (狐, 精), demons, divine retribution (天谴, 雷击), strange phenomena, and moral tales with a supernatural element. 
+
+Here are some examples of titles that FIT these categories: 
+完人夫妇得善报 (Virtuous couple receives good karma) 窃物雷击 (Thief struck by lightning) 狐女报恩 (Fox spirit repays a kindness) 逼奸缢鬼 (Rapist is haunted to death by the victim's ghost) 怨鬼索命 (Vengeful ghost seeks life) 猴精 (Monkey spirit) 梦游地狱记 (A record of dreaming and traveling to hell) 
+
+Here are some examples of titles that DO NOT FIT these categories: 
+京报 (Beijing Gazette) 议建铁路引 (Discussion on building a railway) 东洋和约条例 (Japan Treaty Articles) 会审公案 (Mixed Court Case) 奢俭论 (On Extravagance and Frugality) 申报馆续印书目 (Shen Bao Office Continued Book Catalog) 
+
+Analyze the following list of titles. Return a JSON array containing ONLY the titles that you classify as '志怪' or '异事'. Do not include any titles that are purely about crime, war, politics, or social commentary unless they have a clear supernatural or bizarre element.
+```
+
+### 两个分类示例得出的不同结果对比：
+- 分类示例A对应文件1，分类示例B对应文件2.
+- 仅存在于 文件1 (input_file_0.csv) 的记录：
+```
+   数量: 9
+          Title  Author          日期
+       吉祥街地沟中棺木         1873年04月17日
+       寗城守为店徒气死         1873年08月12日
+        梦游吟  并序   怡雲舘主人 1873年05月02日
+     纪朔望日停止屠宰猪羊         1873年03月01日
+         论数钱毙命事         1873年01月04日
+详录富春童子周允卿四龄书虎字事         1873年10月21日
+          迎送花神词     鄭心珠 1873年02月05日
+             马宝    龍湫舊隱 1873年03月18日
+         黑虫伤人致命 虞山棣花庵主人 1873年09月18日
+```
+
+- 仅存在于 文件2 (input_file_1.csv) 的记录
+```
+   
+数量: 38
+                         Title       Author          日期
+                   上海近日求雨并得雨情形              1873年08月04日
+                           假阵头              1873年08月02日
+                          冤莫能伸              1873年10月25日
+                          冤莫能伸 臺灣淡水莊長順號 莊関龜 1873年10月27日
+                          冤莫能伸 臺灣淡水莊長順號 莊関龜 1873年10月28日
+前读嘉定陆烈妇征诗启烈行可风敬题短古以慰贞魂录呈  吟坛教正         白門黃鐸 1873年08月08日
+                            吓痴              1873年12月02日
+                         喜事成凶事              1873年11月21日
+                          失银得粪              1873年09月25日
+                          嫠妇生儿              1873年08月20日
+                          孝女疗亲              1873年02月07日
+                      宁波连日祝融肆虐              1873年12月20日
+                        寡女当堂解衣              1873年08月25日
+                         志串月之戏              1873年10月07日
+                       成一律以慰花魂          寳樹生 1873年05月19日
+                         戒杀放生辨              1873年04月18日
+                       抢亲反捉了和尚              1873年09月16日
+                        曾贞女寿贞记        清泉羅玉峯 1873年02月05日
+                   朔望禁止屠宰宜实奉行说              1873年04月10日
+                          海外奇论              1873年08月01日
+                       漫游次小游仙韵       古滇香海詞人 1873年04月21日
+                   补注戒杀放生辨来稿别号              1873年04月19日
+                      记吴郡新濬望雨泉              1873年09月30日
+                        记彭城姬迭事      巢荇閣主銖寒生 1873年10月02日
+                          记扒裤贼              1873年11月05日
+                         记斗牛奇设              1873年09月09日
+              记苏城求雨情形并街衢宜及早淸理事              1873年08月06日
+                        记闸港雷震事       皖南黃荊山人 1873年11月26日
+                        论养媳呼冤事              1873年11月04日
+                        论冤莫能伸事              1873年11月01日
+                    论杭城立关道士戴枷事              1873年05月31日
+                       贼犯窃观音绣裙              1873年09月13日
+                   辨正昨报苏城和尚求雨事              1873年08月08日
+                           运会说              1873年10月17日
+                          逃婢可谈              1873年01月25日
+                         金衣公子传        鴛湖映雪生 1873年05月24日
+                           金龙船              1873年05月31日
+                           鼠姑传         鴛湖映雪 1873年05月28日
+```
+#### 核心差异总结
+- 文件1 (input_file_0.csv) 独有的记录: 共有 9 条记录是文件1独有，而文件2中没有的。
+- 文件2 (input_file_1.csv) 独有的记录: 共有 38 条记录是文件2独有，而文件1中没有的。
+- 共有记录: 两个文件有 166 条共同的记录。
+- 可以认为，这两个文件来自同一来源，但 文件2 (input_file_1.csv) 是一个更详尽、扩充后的版本，它不仅包含了文件1中的绝大部分内容，还额外增加了38条记录。同时，它也缺少了文件1中的9条特定记录。
