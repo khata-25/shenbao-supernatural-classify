@@ -60,14 +60,15 @@ View your app in AI Studio: https://ai.studio/apps/drive/1aXhstVvsqY9pO_tWMKuqsm
 您上传的数据是“分析对象”，而非“训练材料”：所以，您上传的CSV文件，无论是已分类还是未分类的，对于程序来说都只是本次需要被分析的数据。程序会把这些数据分批次地提交给被“系统指令”临时“教”会了的Gemini模型，让它进行判断。
 
 ### systemInstruction
-- “说明书”是固定的：在 services/geminiService.ts 文件中，有一个名为 systemInstruction 的常量字符串。这个长长的字符串就是我们之前讨论的“系统指令”或“说明书”。它里面包含了对模型角色的定义、任务的描述，以及**硬编码（Hard-coded）**进去的正反两方面范例。这个“说明书”是程序代码的一部分，是固定不变的。
-- 您上传的数据是“待办事项”：在 App.tsx 文件中，当您通过 handleFileChange 函数上传CSV文件时，程序会将文件内容解析成一个 allArticles 列表。这个列表就是本次需要被分析的全部数据，是模型的“待办事项列表”。
+- “说明书”是固定的：在 services/geminiService.ts 文件中，有一个名为 systemInstruction 的常量字符串。这个长长的字符串就是我们之前讨论的“系统指令”或“说明书”。它里面包含了对模型角色的定义、任务的描述，以及**硬编码（Hard-coded）** 进去的正反两方面范例。这个“说明书”是程序代码的一部分，是固定不变的，但是用户使用的时候可以调整这个示例，精心挑选一个**更大、更具多样性的范例集合**，覆盖更广泛的主题（如报应、鬼魂、精怪、异象、仙丹、转世等）。
+- 页面上传的数据是“待办事项”：在 App.tsx 文件中，当您通过 handleFileChange 函数上传CSV文件时，程序会将文件内容解析成一个 allArticles 列表。这个列表就是本次需要被分析的全部数据，是模型的“待办事项列表”。
 - 每次分析都是一次全新的开始：当您点击“开始分析”时 (handleAnalyze 函数)，程序会：
    - 将 allArticles 列表切分成小批次 (batch)。
    - 对于每一个批次，它都会调用 filterSupernaturalArticles 函数。
    - 这个函数会把固定的 systemInstruction 和当前这一批次的标题一起打包，发送给 Gemini API。
 所以，整个流程可以看作是：用一把固定的“尺子”（systemInstruction），去衡量您每次新提供的“布料”（上传的CSV数据）。
-####  systemInstruction说明书举例
+####  systemInstruction说明书举例（可自行调整）
+以下是我的 systemInstruction分类示例：
 ```
  const systemInstruction = `You are an expert historical researcher specializing in the Chinese newspaper 'Shen Bao' (申报) from the late Qing dynasty. Your task is to identify article titles that belong to the '志怪' (records of anomalies, supernatural tales) or '异事' (strange, unusual events) genres. These genres often involve themes of karma (报应), ghosts (鬼), spirits (狐, 精), demons, divine retribution (天谴, 雷击), strange phenomena, and moral tales with a supernatural element.
 
